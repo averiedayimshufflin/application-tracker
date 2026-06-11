@@ -9,19 +9,19 @@ export default async function EventsPage() {
   } = await supabase.auth.getUser()
 
   if (!user) redirect('/')
-
-  const { data: events } = await supabase
-    .from('events')
-    .select(`
-      *,
-      applications (
-        company,
-        role
-      )
-    `)
-    .eq('user_id', user.id)
-    .gte('date', new Date().toISOString())
-    .order('date', { ascending: true })
+const { data: events } = await supabase
+  .from('events')
+  .select(`
+    *,
+    applications (
+      company,
+      role
+    )
+  `)
+  .eq('user_id', user.id)
+  .eq('completed', false)
+  .gte('date', new Date().toISOString())
+  .order('date', { ascending: true })
 
   return (
     <main className="p-6">

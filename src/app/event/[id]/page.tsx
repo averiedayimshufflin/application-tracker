@@ -29,7 +29,30 @@ export default async function EventDetailPage({
     .eq('id', id)
     .eq('user_id', user.id)
     .single()
+async function completeTask() {
+  'use server'
 
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) redirect('/')
+
+  const { error } = await supabase
+    .from('events')
+    .update({ completed: true })
+    .eq('id', id)
+    .eq('user_id', user.id)
+
+  if (error) {
+    console.error(error)
+    return
+  }
+
+  redirect('/events')
+}
   if (!event) notFound()
 
   return (
@@ -101,6 +124,15 @@ export default async function EventDetailPage({
           >
             Edit Task
           </a>
+
+          <form action={completeTask}>
+  <button
+    type="submit"
+    className="rounded-lg border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+  >
+    Mark Complete
+  </button>
+</form>
         </div>
       </div>
     </main>

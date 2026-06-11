@@ -43,7 +43,7 @@ export default async function DashboardPage() {
     .eq('type', 'follow_up')
     .lte('date', new Date().toISOString())
 
-    const { data: upcomingTasks } = await supabase
+   const { data: upcomingTasks } = await supabase
   .from('events')
   .select(`
     *,
@@ -53,6 +53,7 @@ export default async function DashboardPage() {
     )
   `)
   .eq('user_id', user.id)
+  .eq('completed', false)
   .gte('date', new Date().toISOString())
   .order('date', { ascending: true })
   .limit(5)
@@ -192,11 +193,11 @@ export default async function DashboardPage() {
     
   )
     }
-    <a href="/events" className="text-sm text-gray-500 hover:text-gray-900">
+    <a href="/event" className="text-sm text-gray-500 hover:text-gray-900">
   View all
 </a>
     <a
-  href="/events/new"
+  href="/event/add_event"
   className="rounded-lg bg-black px-3 py-2 text-sm font-medium text-white"
 >
   Add Task
