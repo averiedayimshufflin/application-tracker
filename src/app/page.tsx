@@ -6,12 +6,14 @@ export default function LoginPage() {
   const supabase = createClient()
 
   async function signInWithGoogle() {
+    console.log('origin:', window.location.origin)
+
     await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    })
+  provider: 'google',
+  options: {
+    redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+  },
+})
   }
 
   return (
