@@ -1,17 +1,25 @@
-import LoginButton from "@/components/LoginButton";
-export default function Home() {
+'use client'
+
+import { createClient } from '@/lib/supabase/client'
+
+export default function LoginPage() {
+  const supabase = createClient()
+
+  async function signInWithGoogle() {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
+  }
 
   return (
-    <>
     <div>
-      <h1>Welcome to the Job Application Tracker</h1>
-      <p>Please sign in to manage your applications.</p>
+      <h1>Sign In</h1>
+      <button onClick={signInWithGoogle}>
+        Sign in with Google
+      </button>
     </div>
-
-
-<button onClick={signInWithGoogle}>
-  Continue with Google
-</button>
-</>
-);
+  )
 }
