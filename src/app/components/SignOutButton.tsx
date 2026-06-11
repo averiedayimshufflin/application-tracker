@@ -9,7 +9,7 @@ export async function signOut() {
   redirect('/login')
 }
 
-export default function SignOutButton() {
+export default async function SignOutButton() {
   return (
     <form action={signOut}>
       <button type="submit">Sign Out</button>
