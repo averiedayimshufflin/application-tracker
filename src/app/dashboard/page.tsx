@@ -67,6 +67,7 @@ export default async function DashboardPage() {
       </div>
     )
   }
+  
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-8">
@@ -155,6 +156,7 @@ export default async function DashboardPage() {
   <div className="mt-4 space-y-3">
     {upcomingTasks && upcomingTasks.length > 0 ? (
       upcomingTasks.map((task) => (
+        <>
         <div
           key={task.id}
           className="flex items-center justify-between rounded-lg border p-3"
@@ -174,13 +176,32 @@ export default async function DashboardPage() {
           <p className="text-sm text-gray-500">
             {new Date(task.date).toLocaleDateString()}
           </p>
+          <p className="text-sm text-gray-500">
+  {task.applications
+    ? `${task.applications.company} · ${task.applications.role}`
+    : 'General task'}
+</p>
         </div>
+        </>
       ))
+      
     ) : (
       <p className="text-sm text-gray-500">
         No upcoming tasks.
       </p>
-    )}
+    
+  )
+    }
+    <a href="/events" className="text-sm text-gray-500 hover:text-gray-900">
+  View all
+</a>
+    <a
+  href="/events/new"
+  className="rounded-lg bg-black px-3 py-2 text-sm font-medium text-white"
+>
+  Add Task
+</a>
+
   </div>
 </section>
     </div>
