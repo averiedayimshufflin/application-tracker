@@ -43,6 +43,20 @@ export default async function DashboardPage() {
     .eq('type', 'follow_up')
     .lte('date', new Date().toISOString())
 
+    const { data: upcomingTasks } = await supabase
+  .from('events')
+  .select(`
+    *,
+    applications (
+      company,
+      role
+    )
+  `)
+  .eq('user_id', user.id)
+  .gte('date', new Date().toISOString())
+  .order('date', { ascending: true })
+  .limit(5)
+
   function ProgressBar({ value }: { value: number }) {
     return (
       <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
@@ -133,6 +147,42 @@ export default async function DashboardPage() {
           <p>Saved {allApplications?.length ?? 0} applications</p>
         </div>
       </div>
+      <section className="rounded-xl border bg-white p-6 shadow-sm">
+  <h2 className="text-lg font-semibold text-gray-900">
+    Upcoming Tasks
+  </h2>
+
+  <div className="mt-4 space-y-3">
+    {upcomingTasks && upcomingTasks.length > 0 ? (
+      upcomingTasks.map((task) => (
+        <div
+          key={task.id}
+          className="flex items-center justify-between rounded-lg border p-3"
+        >
+          <div>
+            <p className="font-medium text-gray-900">
+              {task.title}
+            </p>
+
+            <p className="text-sm text-gray-500">
+              {task.applications?.company} · {task.applications?.role}
+            </p>
+          </div>
+          <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700">
+  {task.type}
+</span>
+          <p className="text-sm text-gray-500">
+            {new Date(task.date).toLocaleDateString()}
+          </p>
+        </div>
+      ))
+    ) : (
+      <p className="text-sm text-gray-500">
+        No upcoming tasks.
+      </p>
+    )}
+  </div>
+</section>
     </div>
   )
 }
