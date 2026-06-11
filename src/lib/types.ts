@@ -30,17 +30,21 @@ export type Contact = {
     company: string;
     notes: string;
 };
-
+export type EventType =
+  | 'interview'
+  | 'deadline'
+  | 'online_assessment'
+  | 'follow_up'
+  | 'coffee_chat'
+  | 'career_fair'
+  | 'study'
+  | 'resume'
+  | 'general';
 export type Event = {
     id: number;
     applicationId: number;
     type: 
-    | "deadline"
-  | "interview"
-  | "follow_up"
-  | "assessment"
-  | "application_submitted"
-  | "offer_deadline";
+    EventType;
     title: string;
     date: Date;
     notes: string;

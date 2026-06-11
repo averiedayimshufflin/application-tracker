@@ -20,7 +20,7 @@ export default async function ApplicationsPage() {
 
     <>
     <a
-  href="/applications/new"
+  href="/applications/addApplication"
   className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white"
 >
   Add Application
@@ -43,7 +43,12 @@ export default async function ApplicationsPage() {
           <tbody>
             {applications?.map((app) => (
               <tr key={app.id} className="border-b">
-                <td className="p-4 font-medium">{app.company}</td>
+                <td className="p-4 font-medium"><a
+  href={`/applications/${app.id}`}
+  className="font-medium hover:underline"
+>
+  {app.company}
+</a></td>
                 <td className="p-4">{app.role}</td>
                 <td className="p-4">{app.status}</td>
                 <td className="p-4">
