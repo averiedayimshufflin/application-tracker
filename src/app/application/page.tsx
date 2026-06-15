@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
@@ -47,9 +48,9 @@ export default async function ApplicationsPage({
             <p className="text-sm text-gray-500">Manage your internship pipeline and follow-up plan.</p>
           </div>
 
-          <a href="/application/addApplication" className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
+          <Link href="/application/addApplication" className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
             Add Application
-          </a>
+          </Link>
         </div>
 
         <form method="get" className="mb-6 grid gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm md:grid-cols-[1.3fr_0.7fr_auto]">
@@ -92,9 +93,9 @@ export default async function ApplicationsPage({
               {filteredApplications.map((app) => (
                 <tr key={app.id} className="border-b">
                   <td className="p-4 font-medium">
-                    <a href={`/application/${app.id}`} className="font-medium text-blue-600 hover:underline">
+                    <Link href={`/application/${app.id}`} className="font-medium text-blue-600 hover:underline">
                       {app.company}
-                    </a>
+                    </Link>
                     <div className="mt-1 text-xs text-gray-500">{app.location || 'No location listed'}</div>
                   </td>
                   <td className="p-4">{app.role}</td>

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import SignOutButton from '../components/SignOutButton'
@@ -73,9 +74,9 @@ export default async function DashboardPage() {
           </div>
 
           <div className="flex gap-3">
-            <a href="/application" className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <Link href="/application" className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
               View applications
-            </a>
+            </Link>
             <SignOutButton />
           </div>
         </div>
@@ -119,9 +120,9 @@ export default async function DashboardPage() {
                 <h2 className="text-xl font-semibold text-gray-900">Status overview</h2>
                 <p className="mt-1 text-gray-500">A quick snapshot of your pipeline stages.</p>
               </div>
-              <a href="/application" className="text-sm font-medium text-blue-600 hover:underline">
+              <Link href="/application" className="text-sm font-medium text-blue-600 hover:underline">
                 Manage applications
-              </a>
+              </Link>
             </div>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -142,9 +143,9 @@ export default async function DashboardPage() {
                 <h2 className="text-xl font-semibold text-gray-900">Upcoming tasks</h2>
                 <p className="mt-1 text-gray-500">Keep follow-ups and interviews on schedule.</p>
               </div>
-              <a href="/event" className="text-sm font-medium text-blue-600 hover:underline">
+              <Link href="/event" className="text-sm font-medium text-blue-600 hover:underline">
                 View all
-              </a>
+              </Link>
             </div>
 
             <div className="mt-4 space-y-3">
@@ -168,9 +169,9 @@ export default async function DashboardPage() {
               )}
             </div>
 
-            <a href="/event/add_event" className="mt-4 inline-flex rounded-lg bg-black px-3 py-2 text-sm font-medium text-white">
+            <Link href="/event/add_event" className="mt-4 inline-flex rounded-lg bg-black px-3 py-2 text-sm font-medium text-white">
               Add task
-            </a>
+            </Link>
           </div>
         </div>
       </div>

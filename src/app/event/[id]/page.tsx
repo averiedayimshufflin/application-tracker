@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
@@ -57,9 +58,9 @@ async function completeTask() {
 
   return (
     <main className="p-6">
-      <a href="/event" className="text-sm text-gray-500">
+      <Link href="/event" className="text-sm text-gray-500">
         ← Back to tasks
-      </a>
+      </Link>
 
       <div className="mt-6 rounded-xl border bg-white p-6 shadow-sm">
         <div className="flex items-start justify-between gap-4">
@@ -98,12 +99,12 @@ async function completeTask() {
             <p className="text-sm text-gray-500">Related Application</p>
 
             {event.applications ? (
-              <a
+              <Link
                 href={`/application/${event.applications.id}`}
                 className="text-blue-600 hover:underline"
               >
                 {event.applications.company} — {event.applications.role}
-              </a>
+              </Link>
             ) : (
               <p>None</p>
             )}
@@ -118,12 +119,12 @@ async function completeTask() {
         </div>
 
         <div className="mt-6 flex gap-3">
-          <a
+          <Link
             href={`/event/${event.id}/edit`}
             className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white"
           >
             Edit Task
-          </a>
+          </Link>
 
           <form action={completeTask}>
   <button
