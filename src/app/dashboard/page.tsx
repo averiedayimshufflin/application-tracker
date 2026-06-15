@@ -4,71 +4,60 @@ import SignOutButton from '../components/SignOutButton'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   if (!user) redirect('/')
 
-  const { data: allApplications } = await supabase
+  const { data: applications } = await supabase
     .from('applications')
     .select('*')
     .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
 
-  const { data: pastWeekApp } = await supabase
-    .from('applications')
-    .select('*')
-    .eq('user_id', user.id)
-    .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+  const now = new Date()
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const thirtyDaysAhead = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
 
-  const { data: interviews } = await supabase
+  const totalApplications = applications?.length ?? 0
+  const recentApplications = applications?.filter((application) => {
+    const createdAt = application.created_at ? new Date(application.created_at) : null
+    return createdAt && createdAt >= sevenDaysAgo
+  }).length ?? 0
+  const interviewingCount = applications?.filter((application) =>
+    ['interviewing', 'online_assessment'].includes(application.status),
+  ).length ?? 0
+  const offerCount = applications?.filter((application) => application.status === 'offer').length ?? 0
+  const rejectedCount = applications?.filter((application) => application.status === 'rejected').length ?? 0
+  const upcomingDeadlineCount = applications?.filter((application) => {
+    if (!application.deadline) return false
+    const deadline = new Date(application.deadline)
+    return deadline >= now && deadline <= thirtyDaysAhead
+  }).length ?? 0
+
+  const { data: upcomingTasks } = await supabase
     .from('events')
-    .select('*')
+    .select(`
+      *,
+      applications (
+        company,
+        role
+      )
+    `)
     .eq('user_id', user.id)
-    .eq('type', 'interview')
+    .eq('completed', false)
+    .gte('date', now.toISOString())
+    .order('date', { ascending: true })
+    .limit(5)
 
-  const { data: offers } = await supabase
-    .from('offers')
-    .select('*')
-    .eq('user_id', user.id)
-
-  const { data: follow_ups } = await supabase
-    .from('events')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('type', 'follow_up')
-
-  const { data: overdue_follow_ups } = await supabase
-    .from('events')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('type', 'follow_up')
-    .lte('date', new Date().toISOString())
-
-   const { data: upcomingTasks } = await supabase
-  .from('events')
-  .select(`
-    *,
-    applications (
-      company,
-      role
-    )
-  `)
-  .eq('user_id', user.id)
-  .eq('completed', false)
-  .gte('date', new Date().toISOString())
-  .order('date', { ascending: true })
-  .limit(5)
-
-  function ProgressBar({ value }: { value: number }) {
-    return (
-      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-        <div
-          className="bg-blue-600 h-full rounded-full transition-all duration-300"
-          style={{ width: `${value}%` }}
-        />
-      </div>
-    )
-  }
-  
+  const statusBreakdown = [
+    { label: 'Saved', value: applications?.filter((item) => item.status === 'saved').length ?? 0, color: 'bg-slate-100 text-slate-700' },
+    { label: 'Applied', value: applications?.filter((item) => item.status === 'applied').length ?? 0, color: 'bg-blue-100 text-blue-700' },
+    { label: 'Interviewing', value: interviewingCount, color: 'bg-amber-100 text-amber-700' },
+    { label: 'Offer', value: offerCount, color: 'bg-emerald-100 text-emerald-700' },
+    { label: 'Rejected', value: rejectedCount, color: 'bg-rose-100 text-rose-700' },
+  ]
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-8">
@@ -77,134 +66,114 @@ export default async function DashboardPage() {
           Welcome <span className="font-medium text-gray-900">{user.email}</span>
         </div>
 
-        <div className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm border border-gray-200 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
-            <p className="mt-1 text-gray-500">Internship Search</p>
+            <p className="mt-1 text-gray-500">Track applications, interviews, and follow-ups in one place.</p>
           </div>
 
-          <SignOutButton />
+          <div className="flex gap-3">
+            <a href="/applications" className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+              View applications
+            </a>
+            <SignOutButton />
+          </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl bg-white p-5 shadow-sm border border-gray-200">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <h2 className="text-sm font-medium text-gray-500">Total applications</h2>
-            <h1 className="mt-3 text-4xl font-bold text-gray-900">
-              {allApplications?.length ?? 0}
-            </h1>
-            <p className="mt-2 text-sm text-green-600">
-              {"+" + (pastWeekApp?.length ?? "No")} applications from the past week
-            </p>
+            <h1 className="mt-3 text-4xl font-bold text-gray-900">{totalApplications}</h1>
+            <p className="mt-2 text-sm text-green-600">+{recentApplications} this week</p>
           </div>
 
-          <div className="rounded-xl bg-white p-5 shadow-sm border border-gray-200">
-            <h2 className="text-sm font-medium text-gray-500">Upcoming Interviews</h2>
-            <h1 className="mt-3 text-4xl font-bold text-gray-900">
-              {interviews?.length ?? 0}
-            </h1>
-            <p className="mt-2 text-sm text-gray-500">
-              {allApplications?.length && interviews
-                ? (interviews.length / allApplications.length * 100).toFixed(2)
-                : '0'}% response rate
-            </p>
+          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <h2 className="text-sm font-medium text-gray-500">Interviewing</h2>
+            <h1 className="mt-3 text-4xl font-bold text-gray-900">{interviewingCount}</h1>
+            <p className="mt-2 text-sm text-gray-500">Active interview pipeline</p>
           </div>
 
-          <div className="rounded-xl bg-white p-5 shadow-sm border border-gray-200">
+          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <h2 className="text-sm font-medium text-gray-500">Offers</h2>
-            <h1 className="mt-3 text-4xl font-bold text-gray-900">
-              {offers?.length ?? 0}
-            </h1>
-            <p className="mt-2 text-sm text-gray-500">
-              {allApplications && offers
-                ? (offers.length / allApplications.length * 100).toFixed(2)
-                : '0'}% offer rate
-            </p>
+            <h1 className="mt-3 text-4xl font-bold text-gray-900">{offerCount}</h1>
+            <p className="mt-2 text-sm text-gray-500">Successful outcomes</p>
           </div>
 
-          <div className="rounded-xl bg-white p-5 shadow-sm border border-gray-200">
-            <h2 className="text-sm font-medium text-gray-500">Follow-ups</h2>
-            <h1 className="mt-3 text-4xl font-bold text-gray-900">
-              {follow_ups?.length ?? 0}
-            </h1>
-            <p className="mt-2 text-sm text-red-600">
-              {overdue_follow_ups?.length ?? 0} overdue
-            </p>
+          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <h2 className="text-sm font-medium text-gray-500">Rejected</h2>
+            <h1 className="mt-3 text-4xl font-bold text-gray-900">{rejectedCount}</h1>
+            <p className="mt-2 text-sm text-gray-500">Closed out</p>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <h2 className="text-sm font-medium text-gray-500">Upcoming deadlines</h2>
+            <h1 className="mt-3 text-4xl font-bold text-gray-900">{upcomingDeadlineCount}</h1>
+            <p className="mt-2 text-sm text-gray-500">Next 30 days</p>
           </div>
         </div>
 
-        <div className="rounded-xl bg-white p-6 shadow-sm border border-gray-200">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Application Timeline</h2>
-            <p className="mt-1 text-gray-500">
-              Visualize your application history and upcoming events.
-            </p>
+        <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Status overview</h2>
+                <p className="mt-1 text-gray-500">A quick snapshot of your pipeline stages.</p>
+              </div>
+              <a href="/applications" className="text-sm font-medium text-blue-600 hover:underline">
+                Manage applications
+              </a>
+            </div>
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {statusBreakdown.map((item) => (
+                <div key={item.label} className="rounded-lg border border-gray-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                    <span className={`rounded-full px-2 py-1 text-xs font-semibold ${item.color}`}>{item.value}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="mt-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center text-gray-400">
-            Timeline coming soon
-          </div>
-        </div>
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Upcoming tasks</h2>
+                <p className="mt-1 text-gray-500">Keep follow-ups and interviews on schedule.</p>
+              </div>
+              <a href="/events" className="text-sm font-medium text-blue-600 hover:underline">
+                View all
+              </a>
+            </div>
 
-        <div className="rounded-xl bg-blue-50 p-4 text-sm text-blue-700 border border-blue-100">
-          <p>Saved {allApplications?.length ?? 0} applications</p>
+            <div className="mt-4 space-y-3">
+              {upcomingTasks && upcomingTasks.length > 0 ? (
+                upcomingTasks.map((task) => (
+                  <div key={task.id} className="rounded-lg border border-gray-200 p-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-medium text-gray-900">{task.title}</p>
+                        <p className="text-sm text-gray-500">
+                          {task.applications ? `${task.applications.company} · ${task.applications.role}` : 'General task'}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700">{task.type}</span>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-500">{new Date(task.date).toLocaleString()}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">No upcoming tasks yet.</p>
+              )}
+            </div>
+
+            <a href="/events/add_event" className="mt-4 inline-flex rounded-lg bg-black px-3 py-2 text-sm font-medium text-white">
+              Add task
+            </a>
+          </div>
         </div>
       </div>
-      <section className="rounded-xl border bg-white p-6 shadow-sm">
-  <h2 className="text-lg font-semibold text-gray-900">
-    Upcoming Tasks
-  </h2>
-
-  <div className="mt-4 space-y-3">
-    {upcomingTasks && upcomingTasks.length > 0 ? (
-      upcomingTasks.map((task) => (
-        <>
-        <div
-          key={task.id}
-          className="flex items-center justify-between rounded-lg border p-3"
-        >
-          <div>
-            <p className="font-medium text-gray-900">
-              {task.title}
-            </p>
-
-            <p className="text-sm text-gray-500">
-              {task.applications?.company} · {task.applications?.role}
-            </p>
-          </div>
-          <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700">
-  {task.type}
-</span>
-          <p className="text-sm text-gray-500">
-            {new Date(task.date).toLocaleDateString()}
-          </p>
-          <p className="text-sm text-gray-500">
-  {task.applications
-    ? `${task.applications.company} · ${task.applications.role}`
-    : 'General task'}
-</p>
-        </div>
-        </>
-      ))
-      
-    ) : (
-      <p className="text-sm text-gray-500">
-        No upcoming tasks.
-      </p>
-    
-  )
-    }
-    <a href="/event" className="text-sm text-gray-500 hover:text-gray-900">
-  View all
-</a>
-    <a
-  href="/event/add_event"
-  className="rounded-lg bg-black px-3 py-2 text-sm font-medium text-white"
->
-  Add Task
-</a>
-
-  </div>
-</section>
     </div>
   )
 }
