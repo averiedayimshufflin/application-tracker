@@ -47,7 +47,7 @@ export default async function ApplicationsPage({
             <p className="text-sm text-gray-500">Manage your internship pipeline and follow-up plan.</p>
           </div>
 
-          <a href="/applications/new" className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
+          <a href="/application/addApplication" className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
             Add Application
           </a>
         </div>
@@ -92,7 +92,7 @@ export default async function ApplicationsPage({
               {filteredApplications.map((app) => (
                 <tr key={app.id} className="border-b">
                   <td className="p-4 font-medium">
-                    <a href={`/applications/${app.id}`} className="font-medium text-blue-600 hover:underline">
+                    <a href={`/application/${app.id}`} className="font-medium text-blue-600 hover:underline">
                       {app.company}
                     </a>
                     <div className="mt-1 text-xs text-gray-500">{app.location || 'No location listed'}</div>

@@ -51,13 +51,13 @@ async function completeTask() {
     return
   }
 
-  redirect('/events')
+  redirect('/event')
 }
   if (!event) notFound()
 
   return (
     <main className="p-6">
-      <a href="/events" className="text-sm text-gray-500">
+      <a href="/event" className="text-sm text-gray-500">
         ← Back to tasks
       </a>
 
@@ -99,7 +99,7 @@ async function completeTask() {
 
             {event.applications ? (
               <a
-                href={`/applications/${event.applications.id}`}
+                href={`/application/${event.applications.id}`}
                 className="text-blue-600 hover:underline"
               >
                 {event.applications.company} — {event.applications.role}
@@ -119,7 +119,7 @@ async function completeTask() {
 
         <div className="mt-6 flex gap-3">
           <a
-            href={`/events/${event.id}/edit`}
+            href={`/event/${event.id}/edit`}
             className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white"
           >
             Edit Task

@@ -65,12 +65,12 @@ export default async function EditEventPage({
       return
     }
 
-    redirect(`/events/${id}`)
+    redirect(`/event/${id}`)
   }
 
   return (
     <main className="p-6">
-      <a href={`/events/${id}`} className="text-sm text-gray-500">
+      <a href={`/event/${id}`} className="text-sm text-gray-500">
         ← Back to task
       </a>
 

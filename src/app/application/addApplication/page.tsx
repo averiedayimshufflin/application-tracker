@@ -51,7 +51,7 @@ export default function NewApplicationPage() {
       return
     }
 
-    redirect('/applications')
+    redirect('/application')
   }
 
   return (

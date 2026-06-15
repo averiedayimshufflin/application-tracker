@@ -62,7 +62,7 @@ export default async function ApplicationDetailPage({
     if (!user) redirect('/')
 
     await supabase.from('applications').delete().eq('id', id).eq('user_id', user.id)
-    redirect('/applications')
+    redirect('/application')
   }
 
   async function addContact(formData: FormData) {
@@ -91,7 +91,7 @@ export default async function ApplicationDetailPage({
       notes,
     })
 
-    redirect(`/applications/${id}`)
+    redirect(`/application/${id}`)
   }
 
   const notesText = application.notes || ''
@@ -105,12 +105,12 @@ export default async function ApplicationDetailPage({
     <main className="min-h-screen bg-gray-50 p-6">
       <div className="mx-auto max-w-6xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <a href="/applications" className="text-sm text-gray-500 hover:text-gray-700">
+          <a href="/application" className="text-sm text-gray-500 hover:text-gray-700">
             ← Back to applications
           </a>
 
           <div className="flex gap-3">
-            <a href={`/applications/${application.id}/edit`} className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
+            <a href={`/application/${application.id}/edit`} className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
               Edit
             </a>
             <form action={deleteApplication}>
@@ -177,7 +177,7 @@ export default async function ApplicationDetailPage({
           <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">Events</h2>
-              <a href="/events/add_event" className="text-sm font-medium text-blue-600 hover:underline">
+              <a href="/event/add_event" className="text-sm font-medium text-blue-600 hover:underline">
                 Add task
               </a>
             </div>
