@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { ensureProfileRow } from '@/lib/supabase/ensureProfile'
 import { MotionPanel, OceanShell } from '@/app/components/OceanUI'
 
 export default async function NewApplicationEventPage({
@@ -39,6 +40,12 @@ export default async function NewApplicationEventPage({
     } = await supabase.auth.getUser()
 
     if (!user) redirect('/')
+
+    const { error: profileError } = await ensureProfileRow(supabase, user)
+    if (profileError) {
+      console.error('Profile sync failed before application event insert', { userId: user.id, profileError })
+      return
+    }
 
     const title = (formData.get('title') as string | null)?.trim() ?? ''
     const type = (formData.get('type') as string | null) ?? 'general'

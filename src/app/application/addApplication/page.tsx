@@ -1,59 +1,88 @@
+'use client'
+
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { useRouter } from 'next/navigation'
+import { useState, type FormEvent } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { MotionPanel, OceanShell } from '@/app/components/OceanUI'
 
 export default function NewApplicationPage() {
-  async function addApplication(formData: FormData) {
-    'use server'
+  const router = useRouter()
+  const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
 
-    const supabase = await createClient()
+  async function addApplication(formEvent: FormEvent<HTMLFormElement>) {
+    formEvent.preventDefault()
+    setError('')
+    setSaving(true)
 
+    const formData = new FormData(formEvent.currentTarget)
+
+    const company = ((formData.get('company') as string | null) ?? '').trim()
+    const role = ((formData.get('role') as string | null) ?? '').trim()
+    const status = ((formData.get('status') as string | null) ?? 'saved').trim()
+    const jobUrl = ((formData.get('job_url') as string | null) ?? '').trim()
+    const dateApplied = ((formData.get('date_applied') as string | null) ?? '').trim()
+    const deadline = ((formData.get('deadline') as string | null) ?? '').trim()
+    const followUpDate = ((formData.get('follow_up_date') as string | null) ?? '').trim()
+    const salary = ((formData.get('salary') as string | null) ?? '').trim()
+    const resumeFile = ((formData.get('resume_file') as string | null) ?? '').trim()
+    const location = ((formData.get('location') as string | null) ?? '').trim()
+    const notes = ((formData.get('notes') as string | null) ?? '').trim()
+
+    if (!company || !role) {
+      setSaving(false)
+      setError('Company and role are required.')
+      return
+    }
+
+    const supabase = createClient()
     const {
       data: { user },
     } = await supabase.auth.getUser()
 
-    if (!user) redirect('/')
+    if (!user) {
+      setSaving(false)
+      router.replace('/')
+      return
+    }
 
-    const company = formData.get('company') as string
-    const role = formData.get('role') as string
-    const status = formData.get('status') as string
-    const applicationUrl = formData.get('application_url') as string
-    const dateApplied = formData.get('date_applied') as string
-    const deadline = formData.get('deadline') as string
-    const followUpDate = formData.get('follow_up_date') as string
-    const salary = formData.get('salary') as string
-    const resumeVersion = formData.get('resume_version') as string
-    const location = formData.get('location') as string
-    const notes = formData.get('notes') as string
-
-    const metadata = [
-      deadline ? `Deadline: ${deadline}` : '',
-      followUpDate ? `Follow-up: ${followUpDate}` : '',
-      salary ? `Salary: ${salary}` : '',
-      resumeVersion ? `Resume: ${resumeVersion}` : '',
-    ].filter(Boolean)
-
+    const metadata = [followUpDate ? `Follow-up: ${followUpDate}` : ''].filter(Boolean)
     const combinedNotes = [notes, ...metadata].filter(Boolean).join('\n')
 
-    const { error } = await supabase.from('applications').insert({
+    const payload = {
       user_id: user.id,
       company,
       role,
       status,
-      application_url: applicationUrl || null,
+      job_url: jobUrl || null,
       date_applied: dateApplied || null,
       deadline: deadline || null,
-      location,
-      notes: combinedNotes,
-    })
-
-    if (error) {
-      console.error(error)
-      return
+      salary: salary || null,
+      resume_file: resumeFile || null,
+      location: location || null,
+      notes: combinedNotes || null,
     }
 
-    redirect('/application')
+    const { error: insertError } = await supabase.from('applications').insert(payload)
+
+    if (insertError) {
+      const isFK = insertError.code === '23503' || /foreign key/i.test(insertError.message || '')
+
+      if (isFK) {
+        setSaving(false)
+        setError('Your account profile is not ready yet. Sign out and back in, then try again.')
+        return
+      } else {
+        setSaving(false)
+        setError(insertError.message)
+        return
+      }
+    }
+
+    setSaving(false)
+    router.push('/application')
+    router.refresh()
   }
 
   return (
@@ -68,7 +97,13 @@ export default function NewApplicationPage() {
           <p className="mt-2 text-sm text-[#587071]">Capture the essentials for a new internship application.</p>
         </div>
 
-        <form action={addApplication} className="space-y-4">
+        {error ? (
+          <div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
+            {error}
+          </div>
+        ) : null}
+
+        <form onSubmit={addApplication} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <label className="text-sm font-semibold text-[#315965]">
               Company
@@ -104,7 +139,7 @@ export default function NewApplicationPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <label className="text-sm font-semibold text-[#315965]">
               Application URL
-              <input name="application_url" type="url" className="ocean-input mt-1" placeholder="https://..." />
+              <input name="job_url" type="url" className="ocean-input mt-1" placeholder="https://..." />
             </label>
 
             <label className="text-sm font-semibold text-[#315965]">
@@ -132,8 +167,8 @@ export default function NewApplicationPage() {
             </label>
 
             <label className="text-sm font-semibold text-[#315965]">
-              Resume version
-              <input name="resume_version" className="ocean-input mt-1" placeholder="v2" />
+              Resume file
+              <input name="resume_file" className="ocean-input mt-1" placeholder="resume-v2.pdf" />
             </label>
           </div>
 
@@ -146,8 +181,8 @@ export default function NewApplicationPage() {
             />
           </label>
 
-          <button type="submit" className="ocean-button">
-            Save application
+          <button type="submit" disabled={saving} className="ocean-button disabled:opacity-60">
+            {saving ? 'Saving...' : 'Save application'}
           </button>
         </form>
       </MotionPanel>

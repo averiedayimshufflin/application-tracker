@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { ensureProfileRow } from '@/lib/supabase/ensureProfile'
 import { MotionPanel, OceanShell } from '@/app/components/OceanUI'
 
 function parseMetadata(notes: string, label: string) {
@@ -63,6 +64,11 @@ export default async function ApplicationDetailPage({
 
     if (!user) redirect('/')
 
+    if (!user.id) {
+      console.error('Missing user id for contact insert', { user })
+      return
+    }
+
     await supabase.from('applications').delete().eq('id', id).eq('user_id', user.id)
     redirect('/application')
   }
@@ -77,6 +83,12 @@ export default async function ApplicationDetailPage({
 
     if (!user) redirect('/')
 
+    const { error: profileError } = await ensureProfileRow(supabase, user)
+    if (profileError) {
+      console.error('Profile sync failed before contact insert', { userId: user.id, profileError })
+      return
+    }
+
     const name = formData.get('name') as string
     const email = formData.get('email') as string
     const role = formData.get('role') as string
@@ -84,22 +96,29 @@ export default async function ApplicationDetailPage({
 
     if (!name) return
 
-    await supabase.from('contacts').insert({
+    const payload = {
       user_id: user.id,
       application_id: id,
       name,
       email,
       role,
+      company: application.company,
       notes,
-    })
+    }
+
+    const { error } = await supabase.from('contacts').insert(payload)
+    if (error) {
+      console.error('Contact insert failed for user:', user.id, { payload, error })
+      return
+    }
 
     redirect(`/application/${id}`)
   }
 
   const notesText = application.notes || ''
-  const deadline = parseMetadata(notesText, 'Deadline')
   const followUpDate = parseMetadata(notesText, 'Follow-up')
-  const resumeVersion = parseMetadata(notesText, 'Resume')
+  const legacySalary = parseMetadata(notesText, 'Salary')
+  const legacyResumeFile = parseMetadata(notesText, 'Resume')
   const cleanNotes = stripMetadata(notesText)
 
   return (
@@ -140,7 +159,7 @@ export default async function ApplicationDetailPage({
             {[
               ['Location', application.location || '-'],
               ['Date applied', application.date_applied ? new Date(application.date_applied).toLocaleDateString() : '-'],
-              ['Deadline', deadline || '-'],
+              ['Deadline', application.deadline ? new Date(application.deadline).toLocaleDateString() : '-'],
               ['Follow-up', followUpDate || '-'],
             ].map(([label, value]) => (
               <div key={label} className="rounded-2xl border border-[#b9ddd8]/70 bg-white/58 p-4">
@@ -153,8 +172,8 @@ export default async function ApplicationDetailPage({
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="rounded-2xl border border-[#b9ddd8]/70 bg-white/58 p-4">
               <p className="text-sm font-semibold text-[#587071]">Application URL</p>
-              {application.application_url ? (
-                <a href={application.application_url} target="_blank" className="mt-1 inline-flex font-bold text-[#0a6871] hover:underline">
+              {application.job_url ? (
+                <a href={application.job_url} target="_blank" className="mt-1 inline-flex font-bold text-[#0a6871] hover:underline">
                   View posting
                 </a>
               ) : (
@@ -162,8 +181,12 @@ export default async function ApplicationDetailPage({
               )}
             </div>
             <div className="rounded-2xl border border-[#b9ddd8]/70 bg-white/58 p-4">
-              <p className="text-sm font-semibold text-[#587071]">Resume version</p>
-              <p className="mt-1 text-[#103745]">{resumeVersion || '-'}</p>
+              <p className="text-sm font-semibold text-[#587071]">Salary</p>
+              <p className="mt-1 text-[#103745]">{application.salary || legacySalary || '-'}</p>
+            </div>
+            <div className="rounded-2xl border border-[#b9ddd8]/70 bg-white/58 p-4">
+              <p className="text-sm font-semibold text-[#587071]">Resume file</p>
+              <p className="mt-1 text-[#103745]">{application.resume_file || legacyResumeFile || '-'}</p>
             </div>
           </div>
 

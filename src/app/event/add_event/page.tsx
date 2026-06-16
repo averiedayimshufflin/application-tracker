@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { ensureProfileRow } from '@/lib/supabase/ensureProfile'
 import { MotionPanel, OceanShell } from '@/app/components/OceanUI'
 
 export default async function NewGeneralEventPage({
@@ -35,23 +36,36 @@ export default async function NewGeneralEventPage({
 
     if (!user) redirect('/')
 
+    if (!user.id) {
+      console.error('Missing user id for event insert', { user })
+      return
+    }
+
+    const { error: profileError } = await ensureProfileRow(supabase, user)
+    if (profileError) {
+      console.error('Profile sync failed before event insert', { userId: user.id, profileError })
+      return
+    }
+
     const title = formData.get('title') as string
     const type = formData.get('type') as string
     const date = formData.get('date') as string
     const notes = formData.get('notes') as string
     const applicationId = formData.get('application_id') as string
 
-    const { error } = await supabase.from('events').insert({
+    const payload = {
       user_id: user.id,
       application_id: applicationId || null,
       title,
       type,
       date,
       notes,
-    })
+    }
+
+    const { error } = await supabase.from('events').insert(payload)
 
     if (error) {
-      console.error(error)
+      console.error('Event insert failed for user:', user.id, { payload, error })
       return
     }
 

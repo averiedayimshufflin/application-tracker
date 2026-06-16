@@ -21,7 +21,7 @@ export default function ProfilePage() {
         return
       }
 
-      if (data.user.user_metadata?.display_name) {
+      if (data.user?.user_metadata?.display_name || data.user?.user_metadata?.name) {
         router.replace('/dashboard')
         return
       }
@@ -41,18 +41,29 @@ export default function ProfilePage() {
 
     setSaving(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.updateUser({
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      setSaving(false)
+      router.replace('/')
+      return
+    }
+
+    const { error: authError } = await supabase.auth.updateUser({
       data: {
         display_name: name.trim(),
       },
     })
 
-    setSaving(false)
-
-    if (error) {
-      setError(error.message)
+    if (authError) {
+      setSaving(false)
+      setError(authError.message)
       return
     }
+
+    setSaving(false)
 
     router.push('/dashboard')
   }
