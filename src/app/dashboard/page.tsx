@@ -11,6 +11,9 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/')
 
+  const displayName = user.user_metadata?.display_name ?? user.user_metadata?.name
+  if (!displayName) redirect('/profile')
+
   const { data: applications } = await supabase
     .from('applications')
     .select('*')
@@ -67,8 +70,8 @@ export default async function DashboardPage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-700">Arctic dashboard</p>
-              <h2 className="mt-3 text-3xl font-semibold text-slate-950">Welcome back, {user.email}</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">Your application pipeline, interview tasks, and follow-up reminders all in one polished view.</p>
+              <h2 className="mt-3 text-3xl font-semibold text-slate-950">Welcome back, {displayName}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">Nice to see you, {displayName}. Your application pipeline, interview tasks, and follow-up reminders all in one polished view.</p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -84,7 +87,8 @@ export default async function DashboardPage() {
           <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">Total applications</h2>
             <p className="mt-4 text-4xl font-semibold text-slate-950">{totalApplications}</p>
-            <p className="mt-3 text-sm text-sky-700">+{recentApplications} this week</p>
+            <p className="mt-3 text-sm text-slate-700">+{recentApplications} this week</p>
+            <p className="mt-2 text-sm text-slate-500">Let’s keep your search moving, {displayName}.</p>
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
