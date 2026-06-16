@@ -39,12 +39,6 @@ export default function LoginPage() {
               >
                 Sign in with Google
               </button>
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center justify-center rounded-2xl border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
-              >
-                Preview dashboard
-              </Link>
             </div>
           </div>
 
