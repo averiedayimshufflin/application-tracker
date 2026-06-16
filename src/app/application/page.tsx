@@ -44,7 +44,10 @@ export default async function ApplicationsPage({
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Applications</h1>
+            <Link href="/dashboard" className="text-sm text-gray-500 hover:text-gray-700">
+              ← Back
+            </Link>
+            <h1 className="mt-2 text-2xl font-bold text-gray-900">Applications</h1>
             <p className="text-sm text-gray-500">Manage your internship pipeline and follow-up plan.</p>
           </div>
 
