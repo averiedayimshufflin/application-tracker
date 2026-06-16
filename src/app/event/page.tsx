@@ -34,7 +34,7 @@ export default async function EventsPage() {
             <p className="text-sm text-gray-500">Upcoming interviews, deadlines, follow-ups, and planning reminders.</p>
           </div>
 
-          <Link href="/event/add_event" className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
+          <Link href="/event/add_event?from=/event" className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
             Add Task
           </Link>
         </div>

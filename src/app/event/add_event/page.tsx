@@ -1,7 +1,15 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
-export default async function NewGeneralEventPage() {
+export default async function NewGeneralEventPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ from?: string }>
+}) {
+  const params = await searchParams
+  const returnTo = params.from && params.from.startsWith('/') ? params.from : '/event'
+
   const supabase = await createClient()
   const {
     data: { user },
@@ -46,14 +54,17 @@ export default async function NewGeneralEventPage() {
       return
     }
 
-    redirect('/event')
+    redirect(returnTo)
   }
 
   return (
     <main className="min-h-screen bg-gray-50 p-6">
       <div className="mx-auto max-w-3xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Add Task</h1>
+          <Link href={returnTo} className="text-sm text-gray-500 hover:text-gray-700">
+            ← Back
+          </Link>
+          <h1 className="mt-3 text-2xl font-bold text-gray-900">Add Task</h1>
           <p className="text-sm text-gray-500">Add a reminder, deadline, interview, or follow-up tied to one of your applications.</p>
         </div>
 

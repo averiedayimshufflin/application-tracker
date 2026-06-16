@@ -1,12 +1,17 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function NewApplicationEventPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ from?: string }>
 }) {
   const { id } = await params
+  const query = await searchParams
+  const returnTo = query.from && query.from.startsWith('/') ? query.from : `/application/${id}`
 
   const supabase = await createClient()
   const {
@@ -55,16 +60,16 @@ export default async function NewApplicationEventPage({
       return
     }
 
-    redirect(`/application/${id}`)
+    redirect(returnTo)
   }
 
   return (
     <main className="min-h-screen bg-gray-50 p-6">
       <div className="mx-auto max-w-3xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-6">
-          <a href={`/application/${id}`} className="text-sm text-gray-500 hover:text-gray-700">
-            ← Back to application
-          </a>
+          <Link href={returnTo} className="text-sm text-gray-500 hover:text-gray-700">
+            ← Back
+          </Link>
           <h1 className="mt-3 text-2xl font-bold text-gray-900">Add Task for {application.company}</h1>
           <p className="text-sm text-gray-500">Capture a follow-up, interview, or reminder for this application.</p>
         </div>

@@ -177,7 +177,7 @@ export default async function ApplicationDetailPage({
           <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">Events</h2>
-              <Link href="/event/add_event" className="text-sm font-medium text-blue-600 hover:underline">
+              <Link href={`/event/add_event?from=/application/${application.id}`} className="text-sm font-medium text-blue-600 hover:underline">
                 Add task
               </Link>
             </div>

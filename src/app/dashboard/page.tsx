@@ -169,7 +169,7 @@ export default async function DashboardPage() {
               )}
             </div>
 
-            <Link href="/event/add_event" className="mt-4 inline-flex rounded-lg bg-black px-3 py-2 text-sm font-medium text-white">
+            <Link href="/event/add_event?from=/dashboard" className="mt-4 inline-flex rounded-lg bg-black px-3 py-2 text-sm font-medium text-white">
               Add task
             </Link>
           </div>
