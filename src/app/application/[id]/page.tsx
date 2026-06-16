@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { MotionPanel, OceanShell } from '@/app/components/OceanUI'
 
 function parseMetadata(notes: string, label: string) {
   const match = notes.match(new RegExp(`${label}:\\s*(.+)`, 'i'))
@@ -102,82 +103,81 @@ export default async function ApplicationDetailPage({
   const cleanNotes = stripMetadata(notesText)
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-6xl space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href="/application" className="text-sm text-gray-500 hover:text-gray-700">
-            ← Back to applications
+    <OceanShell>
+      <div className="space-y-6">
+        <MotionPanel className="flex flex-wrap items-center justify-between gap-3">
+          <Link href="/application" className="text-sm font-bold text-[#0a6871] hover:underline">
+            &lt;- Back to applications
           </Link>
 
           <div className="flex gap-3">
-            <Link href={`/application/${application.id}/edit`} className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
+            <Link href={`/application/${application.id}/edit`} className="ocean-button">
               Edit
             </Link>
             <form action={deleteApplication}>
-              <button type="submit" className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center rounded-full border border-rose-200 bg-white/70 px-4 py-2 text-sm font-bold text-rose-700 transition hover:bg-rose-50"
+              >
                 Delete
               </button>
             </form>
           </div>
-        </div>
+        </MotionPanel>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <MotionPanel delay={0.05} className="ocean-card p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{application.company}</h1>
-              <p className="text-gray-500">{application.role}</p>
+              <p className="seal-pill">Application shell</p>
+              <h1 className="mt-3 text-3xl font-semibold text-[#103745]">{application.company}</h1>
+              <p className="text-[#587071]">{application.role}</p>
             </div>
 
-            <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">{application.status}</span>
+            <span className="rounded-full bg-[#d8f0ea] px-3 py-1 text-sm font-bold text-[#0a6871]">{application.status}</span>
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <div>
-              <p className="text-sm text-gray-500">Location</p>
-              <p className="mt-1">{application.location || '—'}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Date Applied</p>
-              <p className="mt-1">{application.date_applied ? new Date(application.date_applied).toLocaleDateString() : '—'}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Deadline</p>
-              <p className="mt-1">{deadline || '—'}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Follow-up</p>
-              <p className="mt-1">{followUpDate || '—'}</p>
-            </div>
+            {[
+              ['Location', application.location || '-'],
+              ['Date applied', application.date_applied ? new Date(application.date_applied).toLocaleDateString() : '-'],
+              ['Deadline', deadline || '-'],
+              ['Follow-up', followUpDate || '-'],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-2xl border border-[#b9ddd8]/70 bg-white/58 p-4">
+                <p className="text-sm font-semibold text-[#587071]">{label}</p>
+                <p className="mt-1 text-[#103745]">{value}</p>
+              </div>
+            ))}
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <div>
-              <p className="text-sm text-gray-500">Application URL</p>
+            <div className="rounded-2xl border border-[#b9ddd8]/70 bg-white/58 p-4">
+              <p className="text-sm font-semibold text-[#587071]">Application URL</p>
               {application.application_url ? (
-                <a href={application.application_url} target="_blank" className="mt-1 text-blue-600 hover:underline">
+                <a href={application.application_url} target="_blank" className="mt-1 inline-flex font-bold text-[#0a6871] hover:underline">
                   View posting
                 </a>
               ) : (
-                <p className="mt-1">—</p>
+                <p className="mt-1 text-[#103745]">-</p>
               )}
             </div>
-            <div>
-              <p className="text-sm text-gray-500">Resume Version</p>
-              <p className="mt-1">{resumeVersion || '—'}</p>
+            <div className="rounded-2xl border border-[#b9ddd8]/70 bg-white/58 p-4">
+              <p className="text-sm font-semibold text-[#587071]">Resume version</p>
+              <p className="mt-1 text-[#103745]">{resumeVersion || '-'}</p>
             </div>
           </div>
 
-          <div className="mt-6">
-            <h2 className="font-semibold text-gray-900">Notes</h2>
-            <p className="mt-2 whitespace-pre-line text-sm text-gray-600">{cleanNotes || 'No notes yet.'}</p>
+          <div className="mt-6 rounded-2xl border border-[#b9ddd8]/70 bg-white/58 p-4">
+            <h2 className="font-semibold text-[#103745]">Notes</h2>
+            <p className="mt-2 whitespace-pre-line text-sm text-[#587071]">{cleanNotes || 'No notes yet.'}</p>
           </div>
-        </div>
+        </MotionPanel>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <MotionPanel delay={0.1} className="ocean-card p-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Events</h2>
-              <Link href={`/event/add_event?from=/application/${application.id}`} className="text-sm font-medium text-blue-600 hover:underline">
+              <h2 className="text-lg font-semibold text-[#103745]">Tide marks</h2>
+              <Link href={`/event/add_event?from=/application/${application.id}`} className="text-sm font-bold text-[#0a6871] hover:underline">
                 Add task
               </Link>
             </div>
@@ -185,26 +185,28 @@ export default async function ApplicationDetailPage({
             <div className="mt-4 space-y-3">
               {events && events.length > 0 ? (
                 events.map((event) => (
-                  <div key={event.id} className="rounded-lg border border-gray-200 p-3">
-                    <p className="font-medium text-gray-900">{event.title}</p>
-                    <p className="text-sm text-gray-500">{event.type} · {new Date(event.date).toLocaleDateString()}</p>
+                  <div key={event.id} className="rounded-2xl border border-[#b9ddd8]/70 bg-white/58 p-3">
+                    <p className="font-semibold text-[#103745]">{event.title}</p>
+                    <p className="text-sm text-[#587071]">
+                      {event.type} · {new Date(event.date).toLocaleDateString()}
+                    </p>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500">No events yet.</p>
+                <p className="text-sm text-[#587071]">No events yet.</p>
               )}
             </div>
-          </section>
+          </MotionPanel>
 
-          <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900">Contacts</h2>
+          <MotionPanel delay={0.15} className="ocean-card p-6">
+            <h2 className="text-lg font-semibold text-[#103745]">Contacts</h2>
 
             <form action={addContact} className="mt-4 space-y-3">
-              <input name="name" required className="w-full rounded-lg border px-3 py-2" placeholder="Contact name" />
-              <input name="email" type="email" className="w-full rounded-lg border px-3 py-2" placeholder="Email" />
-              <input name="role" className="w-full rounded-lg border px-3 py-2" placeholder="Recruiter, interviewer, etc." />
-              <textarea name="notes" className="w-full rounded-lg border px-3 py-2" placeholder="Notes about this contact" />
-              <button type="submit" className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
+              <input name="name" required className="ocean-input" placeholder="Contact name" />
+              <input name="email" type="email" className="ocean-input" placeholder="Email" />
+              <input name="role" className="ocean-input" placeholder="Recruiter, interviewer, etc." />
+              <textarea name="notes" className="ocean-input min-h-24" placeholder="Notes about this contact" />
+              <button type="submit" className="ocean-button">
                 Save contact
               </button>
             </form>
@@ -212,19 +214,19 @@ export default async function ApplicationDetailPage({
             <div className="mt-6 space-y-3">
               {contacts && contacts.length > 0 ? (
                 contacts.map((contact) => (
-                  <div key={contact.id} className="rounded-lg border border-gray-200 p-3">
-                    <p className="font-medium text-gray-900">{contact.name}</p>
-                    <p className="text-sm text-gray-500">{contact.role || 'Contact'} · {contact.email || 'No email'}</p>
-                    {contact.notes ? <p className="mt-2 text-sm text-gray-600">{contact.notes}</p> : null}
+                  <div key={contact.id} className="rounded-2xl border border-[#b9ddd8]/70 bg-white/58 p-3">
+                    <p className="font-semibold text-[#103745]">{contact.name}</p>
+                    <p className="text-sm text-[#587071]">{contact.role || 'Contact'} · {contact.email || 'No email'}</p>
+                    {contact.notes ? <p className="mt-2 text-sm text-[#587071]">{contact.notes}</p> : null}
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500">No contacts yet.</p>
+                <p className="text-sm text-[#587071]">No contacts yet.</p>
               )}
             </div>
-          </section>
+          </MotionPanel>
         </div>
       </div>
-    </main>
+    </OceanShell>
   )
 }

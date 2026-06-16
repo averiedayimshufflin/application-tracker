@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { MotionPanel, OceanShell } from '@/app/components/OceanUI'
 
 export default async function NewApplicationEventPage({
   params,
@@ -64,26 +65,27 @@ export default async function NewApplicationEventPage({
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-3xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <OceanShell>
+      <MotionPanel className="ocean-card mx-auto max-w-3xl p-6 sm:p-8">
         <div className="mb-6">
-          <Link href={returnTo} className="text-sm text-gray-500 hover:text-gray-700">
-            ← Back
+          <Link href={returnTo} className="text-sm font-bold text-[#0a6871] hover:underline">
+            &lt;- Back
           </Link>
-          <h1 className="mt-3 text-2xl font-bold text-gray-900">Add Task for {application.company}</h1>
-          <p className="text-sm text-gray-500">Capture a follow-up, interview, or reminder for this application.</p>
+          <p className="seal-pill mt-4">Application tide mark</p>
+          <h1 className="mt-3 text-3xl font-semibold text-[#103745]">Add task for {application.company}</h1>
+          <p className="mt-2 text-sm text-[#587071]">Capture a follow-up, interview, or reminder for this application.</p>
         </div>
 
         <form action={addEvent} className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-gray-700">Title</label>
-            <input name="title" required className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="Follow up with recruiter" />
-          </div>
+          <label className="block text-sm font-semibold text-[#315965]">
+            Title
+            <input name="title" required className="ocean-input mt-1" placeholder="Follow up with recruiter" />
+          </label>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="text-sm font-medium text-gray-700">Type</label>
-              <select name="type" defaultValue="general" className="mt-1 w-full rounded-lg border px-3 py-2">
+            <label className="text-sm font-semibold text-[#315965]">
+              Type
+              <select name="type" defaultValue="general" className="ocean-input mt-1">
                 <option value="interview">Interview</option>
                 <option value="deadline">Deadline</option>
                 <option value="online_assessment">Online Assessment</option>
@@ -94,24 +96,24 @@ export default async function NewApplicationEventPage({
                 <option value="resume">Resume</option>
                 <option value="general">General</option>
               </select>
-            </div>
+            </label>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700">Date</label>
-              <input name="date" type="datetime-local" required className="mt-1 w-full rounded-lg border px-3 py-2" />
-            </div>
+            <label className="text-sm font-semibold text-[#315965]">
+              Date
+              <input name="date" type="datetime-local" required className="ocean-input mt-1" />
+            </label>
           </div>
 
-          <div>
-            <label className="text-sm font-medium text-gray-700">Notes</label>
-            <textarea name="notes" className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="Optional details..." />
-          </div>
+          <label className="block text-sm font-semibold text-[#315965]">
+            Notes
+            <textarea name="notes" className="ocean-input mt-1 min-h-28" placeholder="Optional details..." />
+          </label>
 
-          <button type="submit" className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
-            Save Task
+          <button type="submit" className="ocean-button">
+            Save task
           </button>
         </form>
-      </div>
-    </main>
+      </MotionPanel>
+    </OceanShell>
   )
 }

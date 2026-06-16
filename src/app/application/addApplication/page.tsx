@@ -1,5 +1,7 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { MotionPanel, OceanShell } from '@/app/components/OceanUI'
 
 export default function NewApplicationPage() {
   async function addApplication(formData: FormData) {
@@ -55,30 +57,34 @@ export default function NewApplicationPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-3xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <OceanShell>
+      <MotionPanel className="ocean-card mx-auto max-w-3xl p-6 sm:p-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Add Application</h1>
-          <p className="text-sm text-gray-500">Capture the essentials for a new internship application.</p>
+          <Link href="/application" className="text-sm font-bold text-[#0a6871] hover:underline">
+            &lt;- Back to applications
+          </Link>
+          <p className="seal-pill mt-4">New shell</p>
+          <h1 className="mt-3 text-3xl font-semibold text-[#103745]">Add application</h1>
+          <p className="mt-2 text-sm text-[#587071]">Capture the essentials for a new internship application.</p>
         </div>
 
         <form action={addApplication} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="text-sm font-medium text-gray-700">Company</label>
-              <input name="company" required className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="Google" />
-            </div>
+            <label className="text-sm font-semibold text-[#315965]">
+              Company
+              <input name="company" required className="ocean-input mt-1" placeholder="Google" />
+            </label>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700">Role</label>
-              <input name="role" required className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="Software Engineering Intern" />
-            </div>
+            <label className="text-sm font-semibold text-[#315965]">
+              Role
+              <input name="role" required className="ocean-input mt-1" placeholder="Software Engineering Intern" />
+            </label>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="text-sm font-medium text-gray-700">Status</label>
-              <select name="status" defaultValue="saved" className="mt-1 w-full rounded-lg border px-3 py-2">
+            <label className="text-sm font-semibold text-[#315965]">
+              Status
+              <select name="status" defaultValue="saved" className="ocean-input mt-1">
                 <option value="saved">Saved</option>
                 <option value="applied">Applied</option>
                 <option value="online_assessment">Online Assessment</option>
@@ -87,60 +93,64 @@ export default function NewApplicationPage() {
                 <option value="rejected">Rejected</option>
                 <option value="withdrawn">Withdrawn</option>
               </select>
-            </div>
+            </label>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700">Location</label>
-              <input name="location" className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="New York, NY or Remote" />
-            </div>
+            <label className="text-sm font-semibold text-[#315965]">
+              Location
+              <input name="location" className="ocean-input mt-1" placeholder="New York, NY or Remote" />
+            </label>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="text-sm font-medium text-gray-700">Application URL</label>
-              <input name="application_url" type="url" className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="https://..." />
-            </div>
+            <label className="text-sm font-semibold text-[#315965]">
+              Application URL
+              <input name="application_url" type="url" className="ocean-input mt-1" placeholder="https://..." />
+            </label>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700">Date Applied</label>
-              <input name="date_applied" type="date" className="mt-1 w-full rounded-lg border px-3 py-2" />
-            </div>
+            <label className="text-sm font-semibold text-[#315965]">
+              Date applied
+              <input name="date_applied" type="date" className="ocean-input mt-1" />
+            </label>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="text-sm font-medium text-gray-700">Deadline</label>
-              <input name="deadline" type="date" className="mt-1 w-full rounded-lg border px-3 py-2" />
-            </div>
+            <label className="text-sm font-semibold text-[#315965]">
+              Deadline
+              <input name="deadline" type="date" className="ocean-input mt-1" />
+            </label>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700">Follow-up date</label>
-              <input name="follow_up_date" type="date" className="mt-1 w-full rounded-lg border px-3 py-2" />
-            </div>
+            <label className="text-sm font-semibold text-[#315965]">
+              Follow-up date
+              <input name="follow_up_date" type="date" className="ocean-input mt-1" />
+            </label>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="text-sm font-medium text-gray-700">Salary</label>
-              <input name="salary" className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="$20/hr" />
-            </div>
+            <label className="text-sm font-semibold text-[#315965]">
+              Salary
+              <input name="salary" className="ocean-input mt-1" placeholder="$20/hr" />
+            </label>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700">Resume version</label>
-              <input name="resume_version" className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="v2" />
-            </div>
+            <label className="text-sm font-semibold text-[#315965]">
+              Resume version
+              <input name="resume_version" className="ocean-input mt-1" placeholder="v2" />
+            </label>
           </div>
 
-          <div>
-            <label className="text-sm font-medium text-gray-700">Notes</label>
-            <textarea name="notes" className="mt-1 w-full rounded-lg border px-3 py-2" placeholder="Referral, recruiter name, interview notes, etc." />
-          </div>
+          <label className="block text-sm font-semibold text-[#315965]">
+            Notes
+            <textarea
+              name="notes"
+              className="ocean-input mt-1 min-h-28"
+              placeholder="Referral, recruiter name, interview notes, etc."
+            />
+          </label>
 
-          <button type="submit" className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
-            Save Application
+          <button type="submit" className="ocean-button">
+            Save application
           </button>
         </form>
-      </div>
-    </main>
+      </MotionPanel>
+    </OceanShell>
   )
 }

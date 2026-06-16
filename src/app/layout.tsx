@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Arctic Internship Tracker",
-  description: "A calm, polished tracker for internship applications, interviews, and follow-ups.",
+  title: "Seal Shore Internship Tracker",
+  description: "A soft ocean-themed tracker for internship applications, interviews, and follow-ups.",
 };
 
 export default function RootLayout({

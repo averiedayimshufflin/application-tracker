@@ -1,5 +1,7 @@
+import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { MotionPanel, OceanShell } from '@/app/components/OceanUI'
 
 export default async function EditEventPage({
   params,
@@ -69,96 +71,72 @@ export default async function EditEventPage({
   }
 
   return (
-    <main className="p-6">
-      <a href={`/event/${id}`} className="text-sm text-gray-500">
-        ← Back to task
-      </a>
-
-      <div className="mt-6 mb-6">
-        <h1 className="text-2xl font-bold">Edit Task</h1>
-        <p className="text-sm text-gray-500">
-          Update this task, reminder, deadline, or interview.
-        </p>
-      </div>
-
-      <form action={updateEvent} className="max-w-xl space-y-4">
-        <div>
-          <label className="text-sm font-medium">Title</label>
-          <input
-            name="title"
-            required
-            defaultValue={event.title}
-            className="mt-1 w-full rounded-lg border px-3 py-2"
-          />
+    <OceanShell>
+      <MotionPanel className="ocean-card mx-auto max-w-2xl p-6 sm:p-8">
+        <div className="mb-6">
+          <Link href={`/event/${id}`} className="text-sm font-bold text-[#0a6871] hover:underline">
+            &lt;- Back to task
+          </Link>
+          <p className="seal-pill mt-4">Tune current</p>
+          <h1 className="mt-3 text-3xl font-semibold text-[#103745]">Edit task</h1>
+          <p className="mt-2 text-sm text-[#587071]">Update this reminder, deadline, or interview.</p>
         </div>
 
-        <div>
-          <label className="text-sm font-medium">Type</label>
-          <select
-            name="type"
-            defaultValue={event.type}
-            className="mt-1 w-full rounded-lg border px-3 py-2"
-          >
-            <option value="interview">Interview</option>
-            <option value="deadline">Deadline</option>
-            <option value="online_assessment">Online Assessment</option>
-            <option value="follow_up">Follow-up</option>
-            <option value="coffee_chat">Coffee Chat</option>
-            <option value="career_fair">Career Fair</option>
-            <option value="study">Study</option>
-            <option value="resume">Resume</option>
-            <option value="general">General</option>
-          </select>
-        </div>
+        <form action={updateEvent} className="space-y-4">
+          <label className="block text-sm font-semibold text-[#315965]">
+            Title
+            <input name="title" required defaultValue={event.title} className="ocean-input mt-1" />
+          </label>
 
-        <div>
-          <label className="text-sm font-medium">Date</label>
-          <input
-            name="date"
-            type="datetime-local"
-            required
-            defaultValue={
-              event.date
-                ? new Date(event.date).toISOString().slice(0, 16)
-                : ''
-            }
-            className="mt-1 w-full rounded-lg border px-3 py-2"
-          />
-        </div>
+          <label className="block text-sm font-semibold text-[#315965]">
+            Type
+            <select name="type" defaultValue={event.type} className="ocean-input mt-1">
+              <option value="interview">Interview</option>
+              <option value="deadline">Deadline</option>
+              <option value="online_assessment">Online Assessment</option>
+              <option value="follow_up">Follow-up</option>
+              <option value="coffee_chat">Coffee Chat</option>
+              <option value="career_fair">Career Fair</option>
+              <option value="study">Study</option>
+              <option value="resume">Resume</option>
+              <option value="general">General</option>
+            </select>
+          </label>
 
-        <div>
-          <label className="text-sm font-medium">Related Application</label>
-          <select
-            name="application_id"
-            defaultValue={event.application_id || ''}
-            className="mt-1 w-full rounded-lg border px-3 py-2"
-          >
-            <option value="">None — general task</option>
+          <label className="block text-sm font-semibold text-[#315965]">
+            Date
+            <input
+              name="date"
+              type="datetime-local"
+              required
+              defaultValue={event.date ? new Date(event.date).toISOString().slice(0, 16) : ''}
+              className="ocean-input mt-1"
+            />
+          </label>
 
-            {applications?.map((app) => (
-              <option key={app.id} value={app.id}>
-                {app.company} — {app.role}
-              </option>
-            ))}
-          </select>
-        </div>
+          <label className="block text-sm font-semibold text-[#315965]">
+            Related application
+            <select name="application_id" defaultValue={event.application_id || ''} className="ocean-input mt-1">
+              <option value="">None - general task</option>
 
-        <div>
-          <label className="text-sm font-medium">Notes</label>
-          <textarea
-            name="notes"
-            defaultValue={event.notes || ''}
-            className="mt-1 w-full rounded-lg border px-3 py-2"
-          />
-        </div>
+              {applications?.map((app) => (
+                <option key={app.id} value={app.id}>
+                  {app.company} - {app.role}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        <button
-          type="submit"
-          className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white"
-        >
-          Save Changes
-        </button>
-      </form>
-    </main>
+          <label className="block text-sm font-semibold text-[#315965]">
+            Notes
+            <textarea name="notes" defaultValue={event.notes || ''} className="ocean-input mt-1 min-h-28" />
+          </label>
+
+          <button type="submit" className="ocean-button">
+            Save changes
+          </button>
+        </form>
+      </MotionPanel>
+    </OceanShell>
   )
 }
