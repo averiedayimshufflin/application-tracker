@@ -61,31 +61,30 @@ export default async function DashboardPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-8">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.95),_rgba(234,244,255,0.9))] px-6 py-10">
       <div className="mx-auto max-w-6xl space-y-8">
-        <div className="text-sm text-gray-600">
-          Welcome <span className="font-medium text-gray-900">{user.email}</span>
-        </div>
+        <div className="rounded-[2rem] border border-slate-200 bg-white/90 p-8 shadow-[0_30px_60px_-30px_rgba(15,23,42,0.25)]">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-700">Arctic dashboard</p>
+              <h2 className="mt-3 text-3xl font-semibold text-slate-950">Welcome back, {user.email}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">Your application pipeline, interview tasks, and follow-up reminders all in one polished view.</p>
+            </div>
 
-        <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
-            <p className="mt-1 text-gray-500">Track applications, interviews, and follow-ups in one place.</p>
-          </div>
-
-          <div className="flex gap-3">
-            <Link href="/application" className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-              View applications
-            </Link>
-            <SignOutButton />
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/application" className="rounded-2xl border border-slate-300 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-100">
+                View applications
+              </Link>
+              <SignOutButton />
+            </div>
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <h2 className="text-sm font-medium text-gray-500">Total applications</h2>
-            <h1 className="mt-3 text-4xl font-bold text-gray-900">{totalApplications}</h1>
-            <p className="mt-2 text-sm text-green-600">+{recentApplications} this week</p>
+          <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">Total applications</h2>
+            <p className="mt-4 text-4xl font-semibold text-slate-950">{totalApplications}</p>
+            <p className="mt-3 text-sm text-sky-700">+{recentApplications} this week</p>
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">

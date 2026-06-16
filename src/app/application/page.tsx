@@ -1,6 +1,16 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+
+const statusStyles: Record<string, string> = {
+  saved: 'bg-sky-100 text-sky-700',
+  applied: 'bg-amber-100 text-amber-700',
+  online_assessment: 'bg-blue-100 text-blue-700',
+  interviewing: 'bg-amber-100 text-amber-700',
+  offer: 'bg-emerald-100 text-emerald-700',
+  rejected: 'bg-rose-100 text-rose-700',
+  withdrawn: 'bg-slate-100 text-slate-700',
+}
 
 export default async function ApplicationsPage({
   searchParams,
@@ -40,31 +50,39 @@ export default async function ApplicationsPage({
   })
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-6 flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <Link href="/dashboard" className="text-sm text-gray-500 hover:text-gray-700">
-              ← Back
-            </Link>
-            <h1 className="mt-2 text-2xl font-bold text-gray-900">Applications</h1>
-            <p className="text-sm text-gray-500">Manage your internship pipeline and follow-up plan.</p>
-          </div>
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(248,250,255,1),_rgba(219,234,254,0.9))] px-6 py-10">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <div className="rounded-[2rem] border border-slate-200 bg-white/95 p-6 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.15)]">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <Link href="/dashboard" className="text-sm font-medium text-sky-700 hover:text-sky-900">
+                ← Back to dashboard
+              </Link>
+              <h1 className="mt-3 text-3xl font-semibold text-slate-950">Applications</h1>
+              <p className="mt-2 text-sm text-slate-600">Organize internship opportunities by stage, date, and next action.</p>
+            </div>
 
-          <Link href="/application/addApplication" className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white">
-            Add Application
-          </Link>
+            <Link
+              href="/application/addApplication"
+              className="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+            >
+              Add application
+            </Link>
+          </div>
         </div>
 
-        <form method="get" className="mb-6 grid gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm md:grid-cols-[1.3fr_0.7fr_auto]">
+        <form method="get" className="grid gap-3 rounded-[1.75rem] border border-slate-200 bg-white/95 p-5 shadow-sm sm:grid-cols-[1.6fr_0.9fr_auto]">
           <input
             name="search"
             defaultValue={params.search ?? ''}
             placeholder="Search company, role, or notes"
-            className="rounded-lg border border-gray-300 px-3 py-2"
+            className="rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-sky-100"
           />
-
-          <select name="status" defaultValue={params.status ?? ''} className="rounded-lg border border-gray-300 px-3 py-2">
+          <select
+            name="status"
+            defaultValue={params.status ?? ''}
+            className="rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-sky-100"
+          >
             <option value="">All statuses</option>
             <option value="saved">Saved</option>
             <option value="applied">Applied</option>
@@ -74,50 +92,44 @@ export default async function ApplicationsPage({
             <option value="rejected">Rejected</option>
             <option value="withdrawn">Withdrawn</option>
           </select>
-
-          <button type="submit" className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <button
+            type="submit"
+            className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+          >
             Filter
           </button>
         </form>
 
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          <table className="w-full text-sm">
-            <thead className="border-b bg-gray-50 text-left">
-              <tr>
-                <th className="p-4">Company</th>
-                <th className="p-4">Role</th>
-                <th className="p-4">Status</th>
-                <th className="p-4">Date Applied</th>
-                <th className="p-4">Deadline</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredApplications.map((app) => (
-                <tr key={app.id} className="border-b">
-                  <td className="p-4 font-medium">
-                    <Link href={`/application/${app.id}`} className="font-medium text-blue-600 hover:underline">
-                      {app.company}
-                    </Link>
-                    <div className="mt-1 text-xs text-gray-500">{app.location || 'No location listed'}</div>
-                  </td>
-                  <td className="p-4">{app.role}</td>
-                  <td className="p-4">
-                    <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                      {app.status}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    {app.date_applied ? new Date(app.date_applied).toLocaleDateString() : '—'}
-                  </td>
-                  <td className="p-4">{app.deadline ? new Date(app.deadline).toLocaleDateString() : '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
+        <div className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/95 shadow-sm">
+          <div className="grid gap-4 p-5 sm:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_0.8fr] text-sm font-semibold text-slate-500 sm:p-4">
+            <span>Company</span>
+            <span>Role</span>
+            <span>Status</span>
+            <span>Date applied</span>
+            <span>Deadline</span>
+          </div>
+          <div className="divide-y border-t border-slate-200">
+            {filteredApplications.map((app) => (
+              <Link
+                key={app.id}
+                href={`/application/${app.id}`}
+                className="grid gap-4 p-5 transition hover:bg-slate-50 sm:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_0.8fr]"
+              >
+                <div>
+                  <p className="font-semibold text-slate-950">{app.company}</p>
+                  <p className="mt-1 text-sm text-slate-500">{app.location || 'No location'}</p>
+                </div>
+                <span className="text-slate-700">{app.role}</span>
+                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[app.status ?? ''] ?? 'bg-slate-100 text-slate-700'}`}>
+                  {app.status?.replace(/_/g, ' ') ?? 'Unknown'}
+                </span>
+                <span className="text-slate-700">{app.date_applied ? new Date(app.date_applied).toLocaleDateString() : '—'}</span>
+                <span className="text-slate-700">{app.deadline ? new Date(app.deadline).toLocaleDateString() : '—'}</span>
+              </Link>
+            ))}
+          </div>
           {filteredApplications.length === 0 ? (
-            <div className="p-6 text-sm text-gray-500">No applications match your current filter.</div>
+            <div className="p-6 text-center text-sm text-slate-500">No applications match your current filter.</div>
           ) : null}
         </div>
       </div>
